@@ -19,6 +19,11 @@ class EntityRepositoryDataProvider implements EntityTableDataProviderInterface
         $this->queryBuilder = $this->repository->createQueryBuilder($this->getRootAlias());
     }
 
+    public function getEntityClass(): string
+    {
+        return $this->repository->getClassName();
+    }
+
     /**
      * Алиас для основной сущности, по которой строится таблица.
      */

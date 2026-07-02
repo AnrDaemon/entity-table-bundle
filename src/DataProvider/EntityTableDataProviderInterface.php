@@ -13,6 +13,13 @@ use Doctrine\Common\Collections\Criteria;
 interface EntityTableDataProviderInterface
 {
     /**
+     * Класс сущностей, отображаемых в таблице.
+     *
+     * @return class-string
+     */
+    public function getEntityClass(): string;
+
+    /**
      * Метод тонкой настройки: устанавливает критерии выборки данных для таблицы из общей совокупности.
      */
     public function withScope(Criteria $scope): self;

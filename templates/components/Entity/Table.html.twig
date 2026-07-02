@@ -83,7 +83,16 @@
         <div class="card-body p-0">
             <p>Page: {{ this.page }}</p>
             <p>Per Page: {{ this.perPage }}</p>
-            <table class="table table-hover table-bordered m-0">
+
+            <style>
+                .table-in-card th:first-child, .table-in-card td:first-child {
+                    border-left: none;
+                }
+                .table-in-card th:last-child, .table-in-card td:last-child {
+                    border-right: none;
+                }
+            </style>
+            <table class="table table-hover table-bordered table-in-card m-0">
                 <tr>
                     <th class="text-center">Пример</th>
                     <th class="text-center">Таблицы</th>
