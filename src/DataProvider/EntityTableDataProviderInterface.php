@@ -37,10 +37,20 @@ interface EntityTableDataProviderInterface
     /**
      * Общее количество элементов во всей таблице.
      */
-    public function getTotalDataCount(): int;
+    public function getTotalCount(): int;
 
     /**
      * Коллекция данных для отображения на конкретной странице.
      */
     public function getDataByPage(int $page = 1): Collection;
+
+    /**
+     * Метод гидрации данных для LiveComponent.
+     */
+    public static function hydrate(mixed $value): ?static;
+
+    /**
+     * Метод дегидрации данных для LiveComponent.
+     */
+    public function dehydrate(): mixed;
 }

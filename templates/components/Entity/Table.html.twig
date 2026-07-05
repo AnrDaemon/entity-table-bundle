@@ -83,6 +83,7 @@
         <div class="card-body p-0">
             <p>Page: {{ this.page }}</p>
             <p>Per Page: {{ this.perPage }}</p>
+            <p>Data total: {{ data.getTotalCount() }}</p>
 
             <style>
                 .table-in-card th:first-child, .table-in-card td:first-child {
@@ -98,21 +99,13 @@
                     <th class="text-center">Таблицы</th>
                     <th class="text-center">С данными</th>
                 </tr>
-                <tr style="transform: rotate(0);">
-                    <td>11</td>
-                    <td>12</td>
-                    <td>13</td>
-                </tr>
-                <tr style="transform: rotate(0);">
-                    <td>21</td>
-                    <td>22</td>
-                    <td>23</td>
-                </tr>
-                <tr style="transform: rotate(0);">
-                    <td>31</td>
-                    <td>32</td>
-                    <td>33</td>
-                </tr>
+                {% for row in computed.data.getDataByPage() %}
+                    <tr style="transform: rotate(0);">
+                        <td>{{ row.id }}</td>
+                        <td>{{ row }}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
             </table>
         </div>
         <div class="card-footer border-top-0 m-0 p-1 row justify-content-between">

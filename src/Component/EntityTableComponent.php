@@ -2,6 +2,7 @@
 
 namespace SprintF\Bundle\EntityTable\Component;
 
+use SprintF\Bundle\EntityTable\DataProvider\EntityTableDataProviderInterface;
 use SprintF\Metadata\Mapping\Attribute\MetadataAttribute;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -42,7 +43,9 @@ class EntityTableComponent
     #[LiveProp(writable: false)]
     public string $group = MetadataAttribute::DEFAULT_GROUP;
 
-    public function __construct(
-    ) {
-    }
+    /**
+     * Данные для построения таблицы, в специальной "обёртке".
+     */
+    #[LiveProp(writable: false)]
+    public EntityTableDataProviderInterface $data;
 }

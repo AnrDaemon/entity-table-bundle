@@ -51,7 +51,7 @@ class EntityRepositoryDataProvider implements EntityTableDataProviderInterface
         // TODO: Implement withPageSize() method.
     }
 
-    public function getTotalDataCount(): int
+    public function getTotalCount(): int
     {
         // TODO: Implement getTotalDataCount() method.
     }
@@ -59,5 +59,16 @@ class EntityRepositoryDataProvider implements EntityTableDataProviderInterface
     public function getDataByPage(int $page = 1): Collection
     {
         // TODO: Implement getDataByPage() method.
+    }
+
+    public static function hydrate(mixed $value): ?static
+    {
+        return null;
+    }
+
+    public function dehydrate(): mixed
+    {
+        return [
+        ];
     }
 }
