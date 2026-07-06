@@ -3,6 +3,8 @@
 namespace SprintF\Bundle\EntityTable\Component;
 
 use SprintF\Bundle\EntityTable\DataProvider\EntityTableDataProviderInterface;
+use SprintF\Bundle\EntityTable\Mapping\ClassMetadata;
+use SprintF\Bundle\EntityTable\Mapping\Factory\ClassMetadataFactory;
 use SprintF\Metadata\Mapping\Attribute\MetadataAttribute;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -12,6 +14,11 @@ use Symfony\UX\LiveComponent\DefaultActionTrait;
 class EntityTableComponent
 {
     use DefaultActionTrait;
+
+    public function __construct(
+        protected readonly ClassMetadataFactory $classMetadataFactory,
+    ) {
+    }
 
     /**
      * Текущая страница постраничного отображения.
@@ -48,4 +55,12 @@ class EntityTableComponent
      */
     #[LiveProp(writable: false)]
     public EntityTableDataProviderInterface $data;
+
+    /**
+     * Метаданные для класса данных, полученные от атрибутов этого класса и его свойств.
+     */
+    public function getMetadata(): ClassMetadata
+    {
+        return $this->classMetadataFactory->getMetadataFor($this->data->getEntityClass());
+    }
 }
