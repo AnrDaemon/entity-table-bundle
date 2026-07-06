@@ -7,6 +7,8 @@ namespace SprintF\Bundle\EntityTable\Mapping;
 use SprintF\Metadata\Mapping\Attribute\MetadataAttribute;
 use SprintF\Metadata\Mapping\PropertyMetadata as PropertyMetadataAbstract;
 use SprintF\ValueObjects\Value\DefaultValue;
+use Symfony\Component\Translation\TranslatableMessage;
+use Symfony\Contracts\Translation\TranslatableInterface;
 
 class PropertyMetadata extends PropertyMetadataAbstract
 {
@@ -23,9 +25,9 @@ class PropertyMetadata extends PropertyMetadataAbstract
         return $this->data[$group][$key] ?? $this->data[MetadataAttribute::DEFAULT_GROUP][$key] ?? null;
     }
 
-    public function getLabel(string $group = MetadataAttribute::DEFAULT_GROUP): string
+    public function getLabel(string $group = MetadataAttribute::DEFAULT_GROUP): TranslatableInterface
     {
-        return $this->getDataValue($group, 'column.label') ?? '';
+        return $this->getDataValue($group, 'column.label') ?? new TranslatableMessage('');
     }
 
     public function getOrder(string $group = MetadataAttribute::DEFAULT_GROUP): int

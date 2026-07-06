@@ -77,9 +77,12 @@
 <div {{ attributes }} data-loading="addClass(opacity-50)">
 
     <div class="card">
-        <div class="card-header border-bottom-0">
-            <h3 class="display-3 m-0">Список...</h3>
-        </div>
+        {% set label = computed.getMetadata().getLabel(computed.group)|trans %}
+        {% if label %}
+            <div class="card-header border-bottom-0">
+                <h3 class="display-3 m-0">{{ computed.getMetadata().getLabel(computed.group)|trans }}</h3>
+            </div>
+        {% endif %}
         <div class="card-body p-0">
             <p>Page: {{ this.page }}</p>
             <p>Per Page: {{ this.perPage }}</p>
