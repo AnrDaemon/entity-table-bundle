@@ -22,18 +22,18 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
     ) {
     }
 
-    private DoctrineEntityHydrationExtension $doctrineEntityHydration;
+    private static EntityManagerInterface $entityManager;
 
-    public function setDoctrineEntityHydration(DoctrineEntityHydrationExtension $doctrineEntityHydration): void
+    public static function setEntityManager(EntityManagerInterface $entityManager): void
     {
-        $this->doctrineEntityHydration = $doctrineEntityHydration;
+        self::$entityManager = $entityManager;
     }
 
-    private EntityManagerInterface $entityManager;
+    private static DoctrineEntityHydrationExtension $doctrineEntityHydration;
 
-    public function setEntityManager(EntityManagerInterface $entityManager): void
+    public static function setDoctrineEntityHydration(DoctrineEntityHydrationExtension $doctrineEntityHydration): void
     {
-        $this->entityManager = $entityManager;
+        self::$doctrineEntityHydration = $doctrineEntityHydration;
     }
 
     public function getEntityClass(): string
@@ -66,24 +66,22 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
         return $this->collection;
     }
 
-    public static function hydrate(mixed $value,
-        ?EntityManagerInterface $entityManager = null,
-        ?DoctrineEntityHydrationExtension $doctrineEntityHydration = null,
-    ): ?static {
+    public static function hydrate(mixed $value): ?static
+    {
         $class = $value['class'] ?? throw new \InvalidArgumentException('Invalid data class name in dehydrated data');
 
         $ownerClass = $value['owner']['class'] ?? throw new \InvalidArgumentException('Invalid owner class name in dehydrated data');
         $ownerId = $value['owner']['id'] ?? throw new \InvalidArgumentException('Invalid owner id in dehydrated data');
 
-        if (!$doctrineEntityHydration->supports($ownerClass) || null === $owner = $doctrineEntityHydration->hydrate($ownerId, $ownerClass)) {
+        if (!self::$doctrineEntityHydration->supports($ownerClass) || null === $owner = self::$doctrineEntityHydration->hydrate($ownerId, $ownerClass)) {
             return null;
         }
 
         $relationClass = $value['relation']['class'] ?? throw new \InvalidArgumentException('Invalid relation class name in dehydrated data');
         $relationMapping = $value['relation']['mapping'] ?? throw new \InvalidArgumentException('Invalid relation mapping data in dehydrated data');
 
-        $targetClass = $entityManager->getClassMetadata($relationMapping['targetEntity']);
-        $collection = new PersistentCollection($entityManager, $targetClass, new ArrayCollection());
+        $targetClass = self::$entityManager->getClassMetadata($relationMapping['targetEntity']);
+        $collection = new PersistentCollection(self::$entityManager, $targetClass, new ArrayCollection());
         $collection->setOwner($owner, $relationClass::fromMappingArray($relationMapping));
         $collection->setInitialized(false);
 
@@ -99,12 +97,13 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
          * У них должен быть владелец.
          */
         $owner = $this->collection->getOwner();
-        if (null === $owner || !$this->doctrineEntityHydration->supports($owner::class)) {
+        if (null === $owner || !self::$doctrineEntityHydration->supports($owner::class)) {
             return null;
         }
 
         $ret['owner']['class'] = $owner::class;
-        $ret['owner']['id'] = $this->doctrineEntityHydration->dehydrate($owner);
+        $ret['owner']['id'] = self::$doctrineEntityHydration->dehydrate($owner);
+
         $ret['relation']['class'] = $this->collection->getMapping()::class;
         $ret['relation']['mapping'] = $this->collection->getMapping()->toArray();
 

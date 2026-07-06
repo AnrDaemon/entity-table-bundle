@@ -30,16 +30,23 @@ class DataProviderHydrationExtension implements HydrationExtensionInterface
     {
         $class = $value['class'] ?? throw new \InvalidArgumentException('Invalid class name in dehydrated data');
 
-        return $class::hydrate($value, $this->entityManager, $this->doctrineEntityHydration);
+        if (method_exists($class, 'setEntityManager')) {
+            $class::setEntityManager($this->entityManager);
+        }
+        if (method_exists($class, 'setDoctrineEntityHydration')) {
+            $class::setDoctrineEntityHydration($this->doctrineEntityHydration);
+        }
+
+        return $class::hydrate($value);
     }
 
     public function dehydrate(object $object): mixed
     {
-        if (method_exists($object, 'setDoctrineEntityHydration')) {
-            $object->setDoctrineEntityHydration($this->doctrineEntityHydration);
-        }
         if (method_exists($object, 'setEntityManager')) {
             $object->setEntityManager($this->entityManager);
+        }
+        if (method_exists($object, 'setDoctrineEntityHydration')) {
+            $object->setDoctrineEntityHydration($this->doctrineEntityHydration);
         }
 
         return $object->dehydrate();
