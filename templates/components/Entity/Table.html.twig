@@ -124,7 +124,7 @@
                 </nav>
             </div>
             <div class="col-auto">
-                {{ _self.pager(20, this.page) }}
+                {{ _self.pager(computed.getPagesCount(), this.page) }}
             </div>
         </div>
     </div>

@@ -45,6 +45,14 @@ class EntityTableComponent
     }
 
     /**
+     * Количество страниц в таблице.
+     */
+    public function getPagesCount(): int
+    {
+        return ceil($this->data->getTotalCount() / $this->perPage);
+    }
+
+    /**
      * Группа метаданных, по которым будет строиться таблица.
      */
     #[LiveProp(writable: false)]
