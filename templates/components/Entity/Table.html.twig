@@ -98,9 +98,9 @@
             </style>
             <table class="table table-hover table-bordered table-in-card m-0">
                 <tr>
-                    <th class="text-center">Пример</th>
-                    <th class="text-center">Таблицы</th>
-                    <th class="text-center">С данными</th>
+                    {% for name, metadata in computed.getMetadata().getPropertiesMetadata(computed.group) %}
+                        <th class="text-center">{{ metadata.getLabel(computed.group)|trans }}</th>
+                    {% endfor %}
                 </tr>
                 {% for row in computed.data.getDataByPage() %}
                     <tr style="transform: rotate(0);">
