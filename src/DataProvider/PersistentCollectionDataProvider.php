@@ -17,6 +17,8 @@ use Symfony\UX\LiveComponent\Hydration\DoctrineEntityHydrationExtension;
  */
 class PersistentCollectionDataProvider implements EntityTableDataProviderInterface
 {
+    private int $pageSize = 25;
+
     public function __construct(
         private PersistentCollection $collection,
     ) {
@@ -53,7 +55,9 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
 
     public function withPageSize(int $size): EntityTableDataProviderInterface
     {
-        // TODO: Implement withPageSize() method.
+        $this->pageSize = $size;
+
+        return $this;
     }
 
     public function getTotalCount(): int
@@ -63,7 +67,9 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
 
     public function getDataByPage(int $page = 1): Collection
     {
-        return $this->collection;
+        return new ArrayCollection(
+            $this->collection->slice(($page - 1) * $this->pageSize, $this->pageSize)
+        );
     }
 
     public static function hydrate(mixed $value): ?static

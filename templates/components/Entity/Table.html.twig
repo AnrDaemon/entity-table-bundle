@@ -83,11 +83,8 @@
                 <h3 class="display-3 m-0">{{ computed.getMetadata().getLabel(computed.group)|trans }}</h3>
             </div>
         {% endif %}
-        <div class="card-body p-0">
-            <p>Page: {{ this.page }}</p>
-            <p>Per Page: {{ this.perPage }}</p>
-            <p>Data total: {{ data.getTotalCount() }}</p>
 
+        <div class="card-body p-0">
             <style>
                 .table-in-card th:first-child, .table-in-card td:first-child {
                     border-left: none;
@@ -102,18 +99,40 @@
                         <th class="text-center">{{ metadata.getLabel(computed.group)|trans }}</th>
                     {% endfor %}
                 </tr>
-                {% for row in computed.data.getDataByPage() %}
+                {% for entity in computed.getTableData() %}
                     <tr style="transform: rotate(0);">
-                        <td>{{ row.id }}</td>
-                        <td>{{ row }}</td>
-                        <td></td>
+                        {% for name, metadata in computed.getMetadata().getPropertiesMetadata(computed.group) %}
+                            {% set valueClass = metadata.getValueClass(computed.group) %}
+
+                            {% if metadata.withUrl(computed.group) %}
+                                <th scope="row">
+                            {% else %}
+                                <td{% if valueClass=='SprintF\\ValueObjects\\Value\\MoneyValue' %} class="text-end"{% endif %}>
+                            {% endif %}
+
+                                {% if metadata.withUrl(computed.group) %}<a href="{{ this.getRowUrl(entity) }}" class="stretched-link" data-turbo="false">{% endif %}
+                                {{ (this.getPropertyValue(entity, metadata.name) ?? '-')|raw }}
+                                {% if metadata.withUrl(computed.group) %}</a>{% endif %}
+
+                            {% if metadata.withUrl(computed.group) %}
+                                </th>
+                            {% else %}
+                                </td>
+                            {% endif %}
+
+                        {% endfor %}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="{{ computed.getMetadata().getPropertiesMetadata(computed.group)|length }}" class="text-center text-muted">Нет данных</td>
                     </tr>
                 {% endfor %}
             </table>
         </div>
+
         <div class="card-footer border-top-0 m-0 p-1 row justify-content-between">
             <div class="col-auto">
-                <nav>
+                <nav class="d-inline-block">
                     <select class="form-select form-select-sm" style="font-size: 0.75rem !important;" data-model="perPage">
                         <option>5</option>
                         <option>10</option>
@@ -122,6 +141,9 @@
                         <option>100</option>
                     </select>
                 </nav>
+                <div class="d-inline-block">
+                    из {{ data.getTotalCount() }}
+                </div>
             </div>
             <div class="col-auto">
                 {{ _self.pager(computed.getPagesCount(), this.page) }}
