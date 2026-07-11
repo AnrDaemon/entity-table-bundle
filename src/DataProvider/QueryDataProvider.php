@@ -1,0 +1,103 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SprintF\Bundle\EntityTable\DataProvider;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
+/**
+ * Провайдер данных на основе объекта класса ORM\Query.
+ */
+class QueryDataProvider implements EntityTableDataProviderInterface
+{
+    private int $pageSize = 25;
+
+    public function __construct(
+        private Query $query,
+    ) {
+    }
+
+    private static EntityManagerInterface $entityManager;
+
+    public static function setEntityManager(EntityManagerInterface $entityManager): void
+    {
+        self::$entityManager = $entityManager;
+    }
+
+    public function getEntityClass(): string
+    {
+        $ast = $this->query->getAST();
+        if ($ast instanceof SelectStatement) {
+            $from = $ast->fromClause->identificationVariableDeclarations[0]?->rangeVariableDeclaration->abstractSchemaName;
+            if (null !== $from && class_exists($from)) {
+                return $from;
+            }
+        }
+
+        throw new \InvalidArgumentException('Unknow class in select statement');
+    }
+
+    public function withScope(Criteria $scope): EntityTableDataProviderInterface
+    {
+        // TODO: Implement withScope() method.
+    }
+
+    public function withOrder(array|Criteria $order): EntityTableDataProviderInterface
+    {
+        // TODO: Implement withOrder() method.
+    }
+
+    public function withPageSize(int $size): EntityTableDataProviderInterface
+    {
+        $this->pageSize = $size;
+
+        return $this;
+    }
+
+    public function getTotalCount(): int
+    {
+        $paginator = new Paginator($this->query);
+
+        return $paginator->count();
+    }
+
+    public function getDataByPage(int $page = 1): Collection
+    {
+        $paginator = new Paginator($this->query
+            ->setFirstResult(($page - 1) * $this->pageSize)
+            ->setMaxResults($this->pageSize)
+        );
+
+        return new ArrayCollection(
+            iterator_to_array($paginator->getIterator())
+        );
+    }
+
+    public static function hydrate(mixed $value): ?static
+    {
+        $class = $value['class'] ?? throw new \InvalidArgumentException('Invalid data class name in dehydrated data');
+
+        $query = new Query(self::$entityManager)
+            ->setDQL($value['query']['dql'])
+            ->setParameters($value['query']['params'])
+        ;
+
+        return new $class($query);
+    }
+
+    public function dehydrate(): mixed
+    {
+        $ret = ['class' => $this::class];
+        $ret['query']['dql'] = $this->query->getDQL();
+        $ret['query']['params'] = $this->query->getParameters()->toArray();
+
+        return $ret;
+    }
+}
