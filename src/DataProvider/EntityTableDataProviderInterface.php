@@ -13,6 +13,11 @@ use Doctrine\Common\Collections\Criteria;
 interface EntityTableDataProviderInterface
 {
     /**
+     * Проверка: поддерживает ли дата-провайдер данные, которые планируется ему передать?
+     */
+    public static function supports($data): bool;
+
+    /**
      * Класс сущностей, отображаемых в таблице.
      *
      * @return class-string
@@ -43,14 +48,4 @@ interface EntityTableDataProviderInterface
      * Коллекция данных для отображения на конкретной странице.
      */
     public function getDataByPage(int $page = 1): Collection;
-
-    /**
-     * Метод гидрации данных для LiveComponent.
-     */
-    public static function hydrate(mixed $value): ?static;
-
-    /**
-     * Метод дегидрации данных для LiveComponent.
-     */
-    public function dehydrate(): mixed;
 }

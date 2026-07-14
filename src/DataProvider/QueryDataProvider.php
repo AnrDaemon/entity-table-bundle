@@ -7,7 +7,6 @@ namespace SprintF\Bundle\EntityTable\DataProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -19,16 +18,19 @@ class QueryDataProvider implements EntityTableDataProviderInterface
 {
     private int $pageSize = 25;
 
+    public static function supports($data): bool
+    {
+        return is_object($data) && $data instanceof Query;
+    }
+
     public function __construct(
-        private Query $query,
+        private readonly Query $query,
     ) {
     }
 
-    private static EntityManagerInterface $entityManager;
-
-    public static function setEntityManager(EntityManagerInterface $entityManager): void
+    public function getQuery(): Query
     {
-        self::$entityManager = $entityManager;
+        return $this->query;
     }
 
     public function getEntityClass(): string
@@ -78,26 +80,5 @@ class QueryDataProvider implements EntityTableDataProviderInterface
         return new ArrayCollection(
             iterator_to_array($paginator->getIterator())
         );
-    }
-
-    public static function hydrate(mixed $value): ?static
-    {
-        $class = $value['class'] ?? throw new \InvalidArgumentException('Invalid data class name in dehydrated data');
-
-        $query = new Query(self::$entityManager)
-            ->setDQL($value['query']['dql'])
-            ->setParameters($value['query']['params'])
-        ;
-
-        return new $class($query);
-    }
-
-    public function dehydrate(): mixed
-    {
-        $ret = ['class' => $this::class];
-        $ret['query']['dql'] = $this->query->getDQL();
-        $ret['query']['params'] = $this->query->getParameters()->toArray();
-
-        return $ret;
     }
 }
