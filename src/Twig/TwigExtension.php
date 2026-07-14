@@ -18,7 +18,7 @@ class TwigExtension
             PersistentCollectionDataProvider::class,
             QueryDataProvider::class,
         ] as $provider) {
-            if ($provider::support($data)) {
+            if ($provider::supports($data)) {
                 return new $provider($data);
             }
         }
