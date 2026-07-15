@@ -84,6 +84,7 @@ class EntityTableComponent
     public function getTableData(): Collection
     {
         return $this->data
+            ->withOrder($this->getMetadata()->getInitialOrder($this->group))
             ->withPageSize($this->perPage)
             ->getDataByPage($this->page)
         ;

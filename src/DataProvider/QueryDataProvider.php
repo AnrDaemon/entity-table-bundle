@@ -46,14 +46,20 @@ class QueryDataProvider implements EntityTableDataProviderInterface
         throw new \InvalidArgumentException('Unknow class in select statement');
     }
 
+    /**
+     * К сожалению, изменить что-либо в Query не представляется легкой задачей...
+     */
     public function withScope(Criteria $scope): EntityTableDataProviderInterface
     {
-        // TODO: Implement withScope() method.
+        return $this;
     }
 
+    /**
+     * К сожалению, изменить сортировку в Query не представляется легкой задачей...
+     */
     public function withOrder(array|Criteria $order): EntityTableDataProviderInterface
     {
-        // TODO: Implement withOrder() method.
+        return $this;
     }
 
     public function withPageSize(int $size): EntityTableDataProviderInterface

@@ -33,7 +33,7 @@ class DataProviderHydrationExtension implements HydrationExtensionInterface
             }
         }
 
-        return null;
+        throw new \InvalidArgumentException('Class can not be hydrated: '.$class);
     }
 
     public function dehydrate(object $object): mixed
@@ -45,6 +45,6 @@ class DataProviderHydrationExtension implements HydrationExtensionInterface
             }
         }
 
-        return null;
+        throw new \InvalidArgumentException('Object can not be dehydrated: '.get_class($object));
     }
 }
