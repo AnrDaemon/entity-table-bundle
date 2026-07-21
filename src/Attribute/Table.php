@@ -15,7 +15,7 @@ class Table extends MetadataAttribute
     public readonly TranslatableInterface $label;
 
     public function __construct(
-        TranslatableInterface|string $label,
+        TranslatableInterface|string $label = '',
         public readonly Criteria $initialOrder = new Criteria(),
         public readonly array $groups = [MetadataAttribute::DEFAULT_GROUP],
     ) {
