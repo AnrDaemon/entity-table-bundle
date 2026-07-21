@@ -39,12 +39,12 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
 
     public function withScope(Criteria $scope): EntityTableDataProviderInterface
     {
-        // TODO: Implement withScope() method.
+        return $this;
     }
 
-    public function withOrder(array|Criteria $order): EntityTableDataProviderInterface
+    public function withOrder(Criteria $criteria): EntityTableDataProviderInterface
     {
-        // TODO: Implement withOrder() method.
+        return $this;
     }
 
     public function withPageSize(int $size): EntityTableDataProviderInterface

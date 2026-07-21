@@ -32,7 +32,7 @@ interface EntityTableDataProviderInterface
     /**
      * Метод тонкой настройки: устанавливает порядок сортировки данных.
      */
-    public function withOrder(Criteria|array $order): self;
+    public function withOrder(Criteria $criteria): self;
 
     /**
      * Метод тонкой настройки: устанавливает число элементов на одной странице данных.

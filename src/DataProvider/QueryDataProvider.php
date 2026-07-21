@@ -57,7 +57,7 @@ class QueryDataProvider implements EntityTableDataProviderInterface
     /**
      * К сожалению, изменить сортировку в Query не представляется легкой задачей...
      */
-    public function withOrder(array|Criteria $order): EntityTableDataProviderInterface
+    public function withOrder(Criteria $criteria): EntityTableDataProviderInterface
     {
         return $this;
     }

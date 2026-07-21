@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SprintF\Bundle\EntityTable\Attribute;
 
+use Doctrine\Common\Collections\Criteria;
 use SprintF\Metadata\Mapping\Attribute\MetadataAttribute;
 use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatableInterface;
@@ -15,7 +16,7 @@ class Table extends MetadataAttribute
 
     public function __construct(
         TranslatableInterface|string $label,
-        public readonly array $initialOrder = [['id', 'ASC']],
+        public readonly Criteria $initialOrder = new Criteria(),
         public readonly array $groups = [MetadataAttribute::DEFAULT_GROUP],
     ) {
         if (is_string($label)) {

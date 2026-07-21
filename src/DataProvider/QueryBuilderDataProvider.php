@@ -42,8 +42,19 @@ class QueryBuilderDataProvider implements EntityTableDataProviderInterface
         return $this;
     }
 
-    public function withOrder(array|Criteria $order): EntityTableDataProviderInterface
+    public function withOrder(Criteria $criteria): EntityTableDataProviderInterface
     {
+        $i = 1;
+        foreach ($criteria->orderings() as $field => $ordering) {
+            if (1 === $i) {
+                $this->builder->orderBy($field, $ordering->value);
+            } else {
+                $this->builder->addOrderBy($field, $ordering->value);
+            }
+
+            ++$i;
+        }
+
         return $this;
     }
 

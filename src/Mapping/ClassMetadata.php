@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SprintF\Bundle\EntityTable\Mapping;
 
+use Doctrine\Common\Collections\Criteria;
 use SprintF\Metadata\Mapping\Attribute\MetadataAttribute;
 use SprintF\Metadata\Mapping\ClassMetadata as ClassMetadataAbstract;
 use Symfony\Component\Translation\TranslatableMessage;
@@ -24,9 +25,9 @@ class ClassMetadata extends ClassMetadataAbstract
         return $this->getDataValue($group, 'table.label') ?? new TranslatableMessage('');
     }
 
-    public function getInitialOrder(string $group = MetadataAttribute::DEFAULT_GROUP): array
+    public function getInitialOrder(string $group = MetadataAttribute::DEFAULT_GROUP): Criteria
     {
-        return $this->getDataValue($group, 'table.initialOrder') ?? [];
+        return $this->getDataValue($group, 'table.initialOrder') ?? new Criteria();
     }
 
     public function getRoute(string $group = MetadataAttribute::DEFAULT_GROUP): ?string
