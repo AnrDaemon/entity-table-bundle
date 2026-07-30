@@ -6,6 +6,10 @@ use Doctrine\Common\Collections\Collection;
 use SprintF\Bundle\EntityTable\DataProvider\EntityTableDataProviderInterface;
 use SprintF\Bundle\EntityTable\Mapping\ClassMetadata;
 use SprintF\Bundle\EntityTable\Mapping\Factory\ClassMetadataFactory;
+use SprintF\Bundle\Wolfflow\Entity\EntityInterface;
+use SprintF\Bundle\Wolfflow\Status\StatusInterface;
+use SprintF\Bundle\Wolfflow\Workflow\WorkflowCollection;
+use SprintF\Bundle\Wolfflow\Workflow\WorkflowInterface;
 use SprintF\Metadata\Mapping\Attribute\MetadataAttribute;
 use SprintF\ValueObjects\Value\AbstractValue;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -23,6 +27,7 @@ class EntityTableComponent
         protected readonly ClassMetadataFactory $classMetadataFactory,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly WorkflowCollection $allWorkflow,
     ) {
     }
 
@@ -119,5 +124,43 @@ class EntityTableComponent
         $valueClass = $this->getMetadata()->getPropertiesMetadata($this->group)[$property]->getValueClass($this->group);
 
         return new $valueClass($this->propertyAccessor->getValue($entity, $property));
+    }
+
+    /**
+     * Следует ли вообще отображать статусы сущностей в таблице?
+     */
+    public function displayStatuses(): bool
+    {
+        return $this->getMetadata()->displayStatuses($this->group) && 0 < $this->getStatusesToDisplay();
+    }
+
+    /**
+     * Объект рабочего процесса сущностей таблицы, если он существует.
+     */
+    public function getEntityWorkflow(): ?WorkflowInterface
+    {
+        $class = $this->data->getEntityClass();
+        if (!is_a($class, EntityInterface::class, true)) {
+            return null;
+        }
+
+        $workflowName = $class::getWorkflowName();
+
+        return $this->allWorkflow->findByName($workflowName);
+    }
+
+    /**
+     * Список статусов, которые требуется отображать для сущностей в таблице.
+     *
+     * @return StatusInterface[]
+     */
+    public function getStatusesToDisplay(): array
+    {
+        $workflow = $this->getEntityWorkflow();
+        if (null === $workflow) {
+            return [];
+        }
+
+        return $workflow->getStatuses();
     }
 }

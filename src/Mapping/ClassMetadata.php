@@ -40,6 +40,11 @@ class ClassMetadata extends ClassMetadataAbstract
         return $this->getDataValue($group, 'row.routeProperties') ?? [];
     }
 
+    public function displayStatuses(string $group = MetadataAttribute::DEFAULT_GROUP): bool
+    {
+        return $this->getDataValue($group, 'statuses.display') ?? false;
+    }
+
     public function getPropertiesMetadata(string $group = MetadataAttribute::DEFAULT_GROUP): array
     {
         $metadata = parent::getPropertiesMetadataByGroups([$group]);

@@ -96,9 +96,21 @@
             <table class="table table-hover table-bordered table-in-card m-0">
                 <tr>
                     {% for name, metadata in computed.getMetadata().getPropertiesMetadata(computed.group) %}
-                        <th class="text-center">{{ metadata.getLabel(computed.group)|trans }}</th>
+                        <th class="text-center"{% if computed.displayStatuses() %} rowspan="2"{% endif %}>
+                            {{ metadata.getLabel(computed.group)|trans }}
+                        </th>
                     {% endfor %}
+                    {% if computed.displayStatuses() %}
+                        <th colspan="{{ computed.getStatusesToDisplay()|length }}">Статусы</th>
+                    {% endif %}
                 </tr>
+                {% if computed.displayStatuses() %}
+                    <tr>
+                        {% for status in computed.getStatusesToDisplay() %}
+                            <th style="writing-mode: sideways-lr;">{{ status.name|trans }}</th>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
                 {% for entity in computed.getTableData() %}
                     <tr style="transform: rotate(0);">
                         {% for name, metadata in computed.getMetadata().getPropertiesMetadata(computed.group) %}
@@ -121,6 +133,17 @@
                             {% endif %}
 
                         {% endfor %}
+                        {% if computed.displayStatuses() %}
+                            {% for status in computed.getStatusesToDisplay() %}
+                                <td class="text-center">
+                                    {% if status.setEntity(entity).__invoke() %}
+                                        <i class="bi bi-check"></i>
+                                    {% else %}
+                                        <i class="bi bi-x"></i>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        {% endif %}
                     </tr>
                 {% else %}
                     <tr>
