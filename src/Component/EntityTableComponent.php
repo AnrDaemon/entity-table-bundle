@@ -161,6 +161,24 @@ class EntityTableComponent
             return [];
         }
 
-        return $workflow->getStatuses();
+        $included = $this->getMetadata()->getStatusesIncluded();
+        $excluded = $this->getMetadata()->getStatusesExcluded();
+
+        return array_filter(
+            $workflow->getStatuses(),
+            // Логика такая:
+            function (StatusInterface $status) use ($included, $excluded) {
+                // 1. Если статус есть в исключаемых - точно не берем
+                if (!empty($excluded) && in_array($status::getName(), $excluded)) {
+                    return false;
+                }
+                // 2. Если непустое множество включаемых, то проверим, входит ли статус в них, если не входит - не берем
+                if (!empty($included) && !in_array($status::getName(), $included)) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
     }
 }

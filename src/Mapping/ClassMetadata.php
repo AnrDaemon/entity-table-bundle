@@ -45,6 +45,16 @@ class ClassMetadata extends ClassMetadataAbstract
         return $this->getDataValue($group, 'statuses.display') ?? false;
     }
 
+    public function getStatusesIncluded(string $group = MetadataAttribute::DEFAULT_GROUP): array
+    {
+        return $this->getDataValue($group, 'statuses.included') ?? [];
+    }
+
+    public function getStatusesExcluded(string $group = MetadataAttribute::DEFAULT_GROUP): array
+    {
+        return $this->getDataValue($group, 'statuses.excluded') ?? [];
+    }
+
     public function getPropertiesMetadata(string $group = MetadataAttribute::DEFAULT_GROUP): array
     {
         $metadata = parent::getPropertiesMetadataByGroups([$group]);

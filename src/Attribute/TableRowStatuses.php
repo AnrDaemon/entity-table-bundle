@@ -14,8 +14,8 @@ class TableRowStatuses extends MetadataAttribute
 {
     public function __construct(
         public bool $display = true,
-        public array $statuses = [],
-        public array $exclude = [],
+        public array $included = [],
+        public array $excluded = [],
         public readonly array $groups = [MetadataAttribute::DEFAULT_GROUP],
     ) {
     }
