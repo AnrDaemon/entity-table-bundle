@@ -12,6 +12,9 @@ use SprintF\Bundle\Wolfflow\Workflow\WorkflowCollection;
 use SprintF\Bundle\Wolfflow\Workflow\WorkflowInterface;
 use SprintF\Metadata\Mapping\Attribute\MetadataAttribute;
 use SprintF\ValueObjects\Value\AbstractValue;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
@@ -24,7 +27,10 @@ class EntityTableComponent
     use DefaultActionTrait;
 
     public function __construct(
+        #[Autowire(service: 'service_container')]
+        protected readonly ContainerInterface $container,
         protected readonly ClassMetadataFactory $classMetadataFactory,
+        protected readonly FormFactoryInterface $formFactory,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected readonly WorkflowCollection $allWorkflow,
