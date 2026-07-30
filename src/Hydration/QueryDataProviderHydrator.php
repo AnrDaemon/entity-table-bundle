@@ -59,6 +59,9 @@ class QueryDataProviderHydrator implements DataProviderHydratorInterface
         return new QueryDataProvider($query);
     }
 
+    /**
+     * @param QueryDataProvider $object
+     */
     public function dehydrate(EntityTableDataProviderInterface $object): array
     {
         $ret = ['class' => QueryDataProvider::class];
