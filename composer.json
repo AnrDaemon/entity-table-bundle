@@ -14,16 +14,17 @@
     "homepage": "https://sprintf.ru",
     "require": {
         "php": "^8.4",
-        "doctrine/orm": "^3.6",
         "doctrine/doctrine-bundle": "*",
+        "doctrine/orm": "^3.6",
         "sprintf/symfony-metadata-loader": "^1.2.1",
         "sprintf/value-objects": "*",
+        "sprintf/wolfflow-bundle": "^0.5.8",
         "symfony/dependency-injection": "^7.4 || ^8.0",
         "symfony/http-kernel": "^7.4 || ^8.0",
         "symfony/property-access": "^7.4 || ^8.0",
         "symfony/translation": "^7.4 || ^8.0",
-        "symfony/ux-twig-component": "^3.1",
-        "symfony/ux-live-component": "^3.1"
+        "symfony/ux-live-component": "^3.1",
+        "symfony/ux-twig-component": "^3.1"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.90"
