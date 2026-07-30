@@ -7,6 +7,7 @@ namespace SprintF\Bundle\EntityTable\DataProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Query\QueryExpressionVisitor;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
@@ -39,6 +40,24 @@ class QueryBuilderDataProvider implements EntityTableDataProviderInterface
 
     public function withScope(Criteria $scope): EntityTableDataProviderInterface
     {
+        $expression = $scope->getWhereExpression();
+
+        if (null === $expression) {
+            return $this;
+        }
+
+        $visitor = new QueryExpressionVisitor([]);
+        $queryExpression = $visitor->dispatch($expression);
+        $this->builder->andWhere($queryExpression);
+
+        foreach ($visitor->getParameters() as $parameter) {
+            $this->builder->setParameter(
+                $parameter->getName(),
+                $parameter->getValue(),
+                $parameter->getType(),
+            );
+        }
+
         return $this;
     }
 
