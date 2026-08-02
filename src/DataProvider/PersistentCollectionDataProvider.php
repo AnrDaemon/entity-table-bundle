@@ -7,6 +7,7 @@ namespace SprintF\Bundle\EntityTable\DataProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\PersistentCollection;
 
 /**
@@ -24,12 +25,16 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
 
     public function __construct(
         private PersistentCollection $collection,
+        private ?Criteria $criteria = null,
     ) {
+        if (!isset($criteria)) {
+            $this->criteria = Criteria::create();
+        }
     }
 
-    public function getCollection(): PersistentCollection
+    public function getCollection(): Collection&Selectable
     {
-        return $this->collection;
+        return $this->collection->matching($this->criteria);
     }
 
     public function getEntityClass(): string
@@ -39,11 +44,38 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
 
     public function withScope(Criteria $scope): EntityTableDataProviderInterface
     {
+        $newConstraints = $scope->getWhereExpression();
+
+        if (null === $newConstraints) {
+            return $this;
+        }
+
+        $oldConstraints = $this->criteria->getWhereExpression();
+        if (null === $oldConstraints) {
+            $this->criteria->where($newConstraints);
+        } else {
+            $this->criteria->where(
+                Criteria::expr()->andX($oldConstraints, $newConstraints)
+            );
+        }
+
         return $this;
     }
 
     public function withOrder(Criteria $criteria): EntityTableDataProviderInterface
     {
+        $newOrdering = $criteria->orderings();
+        if (empty($newOrdering)) {
+            return $this;
+        }
+
+        $oldOrdering = $this->criteria->orderings();
+        if (empty($oldOrdering)) {
+            $this->criteria->orderBy($newOrdering);
+        } else {
+            $this->criteria->orderBy(\array_diff_key($oldOrdering, $newOrdering) + $newOrdering);
+        }
+
         return $this;
     }
 
@@ -56,13 +88,13 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
 
     public function getTotalCount(): int
     {
-        return $this->collection->count();
+        return $this->getCollection()->count();
     }
 
-    public function getDataByPage(int $page = 1): Collection
+    public function getDataByPage(int $page = 1): Collection&Selectable
     {
         return new ArrayCollection(
-            $this->collection->slice(($page - 1) * $this->pageSize, $this->pageSize)
+            $this->getCollection()->slice(($page - 1) * $this->pageSize, $this->pageSize)
         );
     }
 }
