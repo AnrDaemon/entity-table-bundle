@@ -14,10 +14,8 @@ use Doctrine\ORM\PersistentCollection;
  * Провайдер данных на основе объекта класса PersistentCollection.
  * Типовое применение: отображение данных отношений "-ко-многим" сущностей Doctrine.
  */
-class PersistentCollectionDataProvider implements EntityTableDataProviderInterface
+class PersistentCollectionDataProvider extends AbstractDataProvider implements EntityTableDataProviderInterface
 {
-    private int $pageSize = 25;
-
     public static function supports($data): bool
     {
         return is_object($data) && $data instanceof PersistentCollection && null !== $data->getOwner();
@@ -25,16 +23,18 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
 
     public function __construct(
         private PersistentCollection $collection,
-        private ?Criteria $criteria = null,
+        ?Criteria $criteria = null,
     ) {
         if (!isset($criteria)) {
             $this->criteria = Criteria::create();
+        } else {
+            $this->criteria = $criteria;
         }
     }
 
     public function getCollection(): Collection&Selectable
     {
-        return $this->collection->matching($this->criteria);
+        return $this->collection;
     }
 
     public function getEntityClass(): string
@@ -42,59 +42,20 @@ class PersistentCollectionDataProvider implements EntityTableDataProviderInterfa
         return $this->collection->getTypeClass()->name;
     }
 
-    public function withScope(Criteria $scope): EntityTableDataProviderInterface
-    {
-        $newConstraints = $scope->getWhereExpression();
-
-        if (null === $newConstraints) {
-            return $this;
-        }
-
-        $oldConstraints = $this->criteria->getWhereExpression();
-        if (null === $oldConstraints) {
-            $this->criteria->where($newConstraints);
-        } else {
-            $this->criteria->where(
-                Criteria::expr()->andX($oldConstraints, $newConstraints)
-            );
-        }
-
-        return $this;
-    }
-
-    public function withOrder(Criteria $criteria): EntityTableDataProviderInterface
-    {
-        $newOrdering = $criteria->orderings();
-        if (empty($newOrdering)) {
-            return $this;
-        }
-
-        $oldOrdering = $this->criteria->orderings();
-        if (empty($oldOrdering)) {
-            $this->criteria->orderBy($newOrdering);
-        } else {
-            $this->criteria->orderBy(\array_diff_key($oldOrdering, $newOrdering) + $newOrdering);
-        }
-
-        return $this;
-    }
-
-    public function withPageSize(int $size): EntityTableDataProviderInterface
-    {
-        $this->pageSize = $size;
-
-        return $this;
-    }
-
     public function getTotalCount(): int
     {
-        return $this->getCollection()->count();
+        return $this->getMatching()->count();
     }
 
     public function getDataByPage(int $page = 1): Collection&Selectable
     {
         return new ArrayCollection(
-            $this->getCollection()->slice(($page - 1) * $this->pageSize, $this->pageSize)
+            $this->getMatching()->slice(($page - 1) * $this->pageSize, $this->pageSize)
         );
+    }
+
+    private function getMatching(): Collection
+    {
+        return $this->collection->matching($this->criteria);
     }
 }
