@@ -38,6 +38,9 @@ class QueryBuilderDataProvider implements EntityTableDataProviderInterface
         return $this->builder->getRootEntities()[0] ?? throw new \InvalidArgumentException('Unknow root entity');
     }
 
+    /**
+     * FIXME: Фильтрация по `date > :date` и `date < :date` в двух разных вызовах вернёт только последнее условие.
+     */
     public function withScope(Criteria $scope): EntityTableDataProviderInterface
     {
         $expression = $scope->getWhereExpression();
